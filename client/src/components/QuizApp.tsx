@@ -154,15 +154,38 @@ export default function QuizApp() {
     }
   };
 
+  // Background animation for the entire app
+  const backgroundVariants = {
+    hidden: { 
+      backgroundPosition: '0% 0%' 
+    },
+    visible: {
+      backgroundPosition: '100% 100%',
+      transition: {
+        duration: 30,
+        repeat: Infinity,
+        repeatType: "reverse" as const,
+      }
+    }
+  };
+
   return (
     <motion.div 
-      className="min-h-screen font-sans py-8 px-4 md:py-12 bg-background"
+      className="min-h-screen font-sans py-8 px-4 md:py-12 bg-background relative overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
+      {/* Animated background gradient */}
+      <motion.div
+        className="animated-bg absolute top-0 left-0 right-0 bottom-0 -z-10 opacity-30"
+        initial="hidden"
+        animate="visible"
+        variants={backgroundVariants}
+      />
+      
       <motion.div 
-        className="quiz-container mx-auto rounded-xl shadow-md overflow-hidden max-w-3xl hover:shadow-glow"
+        className="quiz-container mx-auto rounded-xl shadow-md overflow-hidden max-w-3xl hover:shadow-glow relative z-10"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ 
@@ -173,13 +196,26 @@ export default function QuizApp() {
         }}
       >
         {/* App Header with Animated Title */}
-        <div className="header-gradient py-6 px-6 md:px-8">
+        <div className="header-gradient py-6 px-6 md:px-8 relative">
+          {/* Subtle moving light effect in the header */}
+          <motion.div 
+            className="absolute top-0 left-0 right-0 bottom-0 opacity-30"
+            animate={{
+              background: [
+                'radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 50%)',
+                'radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.3) 0%, transparent 50%)',
+                'radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 50%)'
+              ]
+            }}
+            transition={{ duration: 10, repeat: Infinity, repeatType: 'reverse' }}
+          />
+          
           <AnimatedTitle 
             text="QUIZ MASTER" 
-            className="text-2xl md:text-3xl font-bold text-white tracking-wide mb-2" 
+            className="text-2xl md:text-3xl font-bold text-white tracking-wide mb-2 relative z-10" 
           />
           <motion.p 
-            className="text-white opacity-90 mt-1"
+            className="text-white opacity-90 mt-1 relative z-10"
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.5, duration: 0.5 }}
