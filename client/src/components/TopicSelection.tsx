@@ -9,39 +9,45 @@ interface TopicSelectionProps {
 
 // Letter animation for topic names similar to Quiz Master
 const LetterAnimation = ({ text, index: wordIndex }: { text: string, index: number }) => {
-  // Animation variants for each letter
+  // Animation variants for each letter with enhanced entrance
   const letterVariants = {
     hidden: { 
       opacity: 0,
-      y: 10,
-      scale: 0.8,
+      y: 15,
+      scale: 0.5,
+      rotateX: 90, // Start with letters flipped
     },
     visible: (i: number) => ({ 
       opacity: 1,
       y: 0,
       scale: 1,
+      rotateX: 0, // Rotate to normal position
       transition: {
-        delay: 0.8 + (wordIndex * 0.1) + (i * 0.05),
+        // Timing calculation for sequential appearance
+        // First wait for card to appear, then start letter animations
+        delay: 1.2 + (wordIndex * 0.2) + (i * 0.06),
         type: 'spring',
-        damping: 12,
-        stiffness: 200,
+        damping: 10,
+        stiffness: 150,
+        mass: 0.8, // Slightly lower mass for more responsive bounce
       },
     }),
   };
 
-  // Glow effect
+  // Enhanced glow effect with more dramatic pulsing
   const glowVariants = {
     idle: {
       textShadow: [
-        '0 0 2px rgba(255, 255, 255, 0.5), 0 0 5px currentColor',
-        '0 0 4px rgba(255, 255, 255, 0.5), 0 0 10px currentColor',
-        '0 0 2px rgba(255, 255, 255, 0.5), 0 0 5px currentColor',
+        '0 0 2px rgba(255, 255, 255, 0.4), 0 0 4px currentColor',
+        '0 0 5px rgba(255, 255, 255, 0.5), 0 0 12px currentColor, 0 0 18px rgba(var(--primary-rgb), 0.5)',
+        '0 0 2px rgba(255, 255, 255, 0.4), 0 0 4px currentColor',
       ],
-      opacity: [0.9, 1, 0.9],
+      opacity: [0.92, 1, 0.92],
       transition: {
-        duration: 2,
+        duration: 2.5,
         repeat: Infinity,
         repeatType: "mirror" as const,
+        delay: Math.random() * 0.5, // Random delay for each letter to avoid synchronized pulsing
       },
     },
   };
@@ -87,8 +93,8 @@ export default function TopicSelection({ onTopicSelect }: TopicSelectionProps) {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.4,
+        staggerChildren: 0.3, // Increase stagger delay between children
+        delayChildren: 0.5, // Slight delay before starting animations
       },
     },
   };
@@ -97,17 +103,18 @@ export default function TopicSelection({ onTopicSelect }: TopicSelectionProps) {
     hidden: { 
       opacity: 0, 
       y: 30,
-      scale: 0.85,
+      scale: 0.7, // Start smaller for more noticeable zoom effect
     },
     visible: (i: number) => ({ 
       opacity: 1, 
       y: 0,
       scale: 1,
       transition: {
-        delay: i * 0.08,
+        delay: i * 0.15, // Longer delay between each item
+        duration: 0.8, // Slower animation for smoother effect
         type: "spring",
-        stiffness: 200,
-        damping: 20,
+        stiffness: 100, // Less stiff for smoother motion
+        damping: 15, // Less damping for slight bounce
       },
     }),
   };
