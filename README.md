@@ -131,6 +131,12 @@ Track your performance over time with detailed metrics:
 - Recent activity
 - Performance trends
 
+Each user's statistics are stored locally on their device using browser's localStorage. This means:
+- Each user will have their own personalized stats
+- Statistics persist between sessions on the same device
+- Different users on different devices will have separate statistics data
+- Statistics remain private to each user
+
 ## 🚢 Deployment
 
 ### Deploying on Vercel
