@@ -8,7 +8,7 @@ interface AnimatedTitleProps {
 }
 
 export default function AnimatedTitle({ text, className = '' }: AnimatedTitleProps) {
-  const [isAnimating, setIsAnimating] = useState(true);
+  const [hasAnimated, setHasAnimated] = useState(false);
   
   // Animation variants for the container
   const containerVariants = {
@@ -46,13 +46,13 @@ export default function AnimatedTitle({ text, className = '' }: AnimatedTitlePro
   const glowVariants = {
     pulse: {
       textShadow: [
-        '0 0 2px rgba(255, 255, 255, 0.5), 0 0 4px currentColor',
-        '0 0 4px rgba(255, 255, 255, 0.5), 0 0 8px currentColor, 0 0 12px currentColor',
-        '0 0 2px rgba(255, 255, 255, 0.5), 0 0 4px currentColor',
+        '0 0 4px rgba(255, 255, 255, 0.7), 0 0 8px currentColor',
+        '0 0 8px rgba(255, 255, 255, 0.7), 0 0 16px currentColor, 0 0 24px currentColor',
+        '0 0 4px rgba(255, 255, 255, 0.7), 0 0 8px currentColor',
       ],
-      opacity: [0.9, 1, 0.9],
+      opacity: [0.95, 1, 0.95],
       transition: {
-        duration: 2,
+        duration: 2.5,
         repeat: Infinity,
         repeatType: "mirror" as const,
       },
@@ -63,12 +63,9 @@ export default function AnimatedTitle({ text, className = '' }: AnimatedTitlePro
   const letters = Array.from(text);
 
   useEffect(() => {
-    // Reset animation state when text changes
-    setIsAnimating(true);
-    
-    // Stop animation after all letters are visible
+    // Mark animation as completed after all letters are visible
     const timer = setTimeout(() => {
-      setIsAnimating(false);
+      setHasAnimated(true);
     }, (letters.length * 100) + 1000);
     
     return () => clearTimeout(timer);
@@ -86,7 +83,6 @@ export default function AnimatedTitle({ text, className = '' }: AnimatedTitlePro
         <motion.span
           key={index}
           variants={letterVariants}
-          animate={!isAnimating ? 'pulse' : undefined}
           className="inline-block"
           style={{ 
             fontSize: 'inherit',

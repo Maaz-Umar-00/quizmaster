@@ -14,7 +14,13 @@
   :root {
     --color-correct: #22c55e;
     --color-incorrect: #ef4444;
-    --color-primary-glow: rgba(var(--primary-rgb), 0.35);
+    --color-primary-glow: rgba(var(--primary-rgb), 0.45);
+  }
+  
+  .dark {
+    --color-correct: #4ade80;
+    --color-incorrect: #f87171;
+    --color-primary-glow: rgba(var(--primary-rgb), 0.6);
   }
 }
 
@@ -28,13 +34,13 @@
   }
   
   .topic-card {
-    @apply bg-white border border-gray-200 rounded-lg p-5 text-center cursor-pointer transition-all duration-300;
+    @apply bg-card border border-border rounded-lg p-5 text-center cursor-pointer transition-all duration-300;
   }
   
   .topic-card:hover {
     @apply border-primary translate-y-[-5px] shadow-lg;
     transform: scale(1.03);
-    box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.25);
+    box-shadow: 0 0 15px var(--color-primary-glow);
   }
   
   .topic-card:active {
@@ -42,12 +48,23 @@
   }
   
   .option-card {
-    @apply flex items-start p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:bg-gray-50;
+    @apply flex items-start p-3 border border-border rounded-lg cursor-pointer transition-all duration-200 hover:bg-accent;
   }
   
   .option-card:hover {
     transform: scale(1.02);
-    box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.15);
+    box-shadow: 0 0 8px var(--color-primary-glow);
+  }
+  
+  /* Dark theme specific styles */
+  .dark .quiz-container {
+    @apply bg-card shadow-xl;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 20px var(--color-primary-glow);
+  }
+  
+  .dark .header-gradient {
+    background: linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary)/0.8));
+    box-shadow: 0 2px 15px var(--color-primary-glow);
   }
 }
 
@@ -109,12 +126,17 @@
       filter: drop-shadow(0 0 3px currentColor);
     }
     50% { 
-      filter: drop-shadow(0 0 8px currentColor);
+      filter: drop-shadow(0 0 12px currentColor);
     }
   }
   
   .animate-glow {
     animation: glow 2s ease-in-out infinite;
+  }
+  
+  /* Enhanced glow for dark mode */
+  .dark .animate-glow {
+    animation: glow 2.5s ease-in-out infinite;
   }
   
   /* Neon flicker */
@@ -124,7 +146,7 @@
       filter: drop-shadow(0 0 5px currentColor) drop-shadow(0 0 10px currentColor);
     }
     20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
-      opacity: 0.7;
+      opacity: 0.8;
       filter: none;
     }
   }
@@ -136,6 +158,10 @@
   .shadow-glow {
     box-shadow: 0 0 15px var(--color-primary-glow);
     transition: box-shadow 0.3s ease;
+  }
+  
+  .dark .shadow-glow {
+    box-shadow: 0 0 25px var(--color-primary-glow);
   }
   
   /* Page transitions */

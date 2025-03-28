@@ -156,13 +156,13 @@ export default function QuizApp() {
 
   return (
     <motion.div 
-      className="min-h-screen font-sans text-gray-800 py-8 px-4 md:py-12 bg-gray-50"
+      className="min-h-screen font-sans py-8 px-4 md:py-12 bg-background"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
       <motion.div 
-        className="quiz-container mx-auto bg-white rounded-xl shadow-md overflow-hidden max-w-3xl hover:shadow-glow"
+        className="quiz-container mx-auto rounded-xl shadow-md overflow-hidden max-w-3xl hover:shadow-glow"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ 
@@ -173,7 +173,7 @@ export default function QuizApp() {
         }}
       >
         {/* App Header with Animated Title */}
-        <div className="bg-gradient-to-r from-primary to-primary/80 py-6 px-6 md:px-8">
+        <div className="header-gradient py-6 px-6 md:px-8">
           <AnimatedTitle 
             text="QUIZ MASTER" 
             className="text-2xl md:text-3xl font-bold text-white tracking-wide mb-2" 

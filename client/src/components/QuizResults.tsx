@@ -57,11 +57,11 @@ export default function QuizResults({
       className="text-center py-6"
     >
       <h2 className="text-2xl font-bold mb-2">Quiz Completed!</h2>
-      <p className="text-gray-600 mb-8">{scoreMessage}</p>
+      <p className="text-muted-foreground mb-8">{scoreMessage}</p>
       
       {/* Circular progress indicator */}
       <div className="relative inline-flex mb-8">
-        <div className="w-40 h-40 rounded-full bg-gray-200">
+        <div className="w-40 h-40 rounded-full bg-muted">
           <div 
             className="absolute inset-0 flex items-center justify-center shadow-glow"
             style={{
@@ -73,7 +73,7 @@ export default function QuizResults({
               transition: 'box-shadow 0.5s ease'
             }}
           >
-            <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center">
+            <div className="w-32 h-32 rounded-full bg-card flex items-center justify-center">
               <span className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">{animatedPercentage}%</span>
             </div>
           </div>
@@ -86,8 +86,8 @@ export default function QuizResults({
       </div>
       
       {/* Score breakdown */}
-      <div className="bg-gray-50 rounded-lg p-4 mb-8 max-w-sm mx-auto">
-        <h3 className="font-semibold mb-3 text-gray-700">Score Breakdown</h3>
+      <div className="bg-accent/30 rounded-lg p-4 mb-8 max-w-sm mx-auto">
+        <h3 className="font-semibold mb-3">Score Breakdown</h3>
         <div className="space-y-3">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
@@ -134,7 +134,7 @@ export default function QuizResults({
             playSound(clickSound);
             onRetryQuiz();
           }}
-          className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100 transition-colors"
+          className="px-5 py-2 border border-border rounded-md hover:bg-muted transition-colors"
           rippleColor="rgba(100, 100, 100, 0.3)"
         >
           Retry This Quiz

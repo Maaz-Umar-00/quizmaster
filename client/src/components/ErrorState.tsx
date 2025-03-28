@@ -16,7 +16,7 @@ export default function ErrorState({ onRetry }: ErrorStateProps) {
     >
       <div className="text-4xl mb-4">😕</div>
       <h3 className="text-xl font-semibold text-destructive mb-2">Oops! Something went wrong</h3>
-      <p className="text-gray-600 mb-6">We couldn't load your quiz questions. Please try again.</p>
+      <p className="text-muted-foreground mb-6">We couldn't load your quiz questions. Please try again.</p>
       <Button onClick={onRetry} className="px-5 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors">
         Try Again
       </Button>

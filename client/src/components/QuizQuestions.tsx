@@ -165,13 +165,13 @@ export default function QuizQuestions({
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.3 }}
-          className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm"
+          className="bg-card border border-border rounded-xl p-6 mb-6 shadow-md"
         >
           <h3 className="text-lg font-medium mb-5">{currentQuestion.text}</h3>
           
           <div className="space-y-3">
             {currentQuestion.options.map((option, index) => {
-              let optionClasses = "option-card flex items-start p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:bg-gray-50";
+              let optionClasses = "option-card flex items-start p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:bg-muted";
               let radioClasses = "w-6 h-6 rounded-full border-2 border-gray-300 flex-shrink-0 mr-3";
               
               // First, handle showing the correct answer for all cases where user has answered
@@ -216,7 +216,7 @@ export default function QuizQuestions({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-gray-50 rounded-lg p-4 mb-6"
+            className="bg-accent/50 rounded-lg p-4 mb-6"
           >
             {userAnswer === -1 ? (
               <div className="flex items-center text-amber-500">
@@ -254,7 +254,7 @@ export default function QuizQuestions({
           variant="outline"
           onClick={onPrevQuestion} 
           disabled={currentQuestionIndex === 0}
-          className="px-5 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 transition-colors"
+          className="px-5 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           rippleColor="rgba(100, 100, 100, 0.3)"
         >
           Previous

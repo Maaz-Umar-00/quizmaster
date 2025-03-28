@@ -94,7 +94,7 @@ export default function TopicSelection({ onTopicSelect }: TopicSelectionProps) {
             >
               {topic.emoji}
             </motion.div>
-            <h3 className="font-medium text-gray-800">{topic.name}</h3>
+            <h3 className="font-medium">{topic.name}</h3>
           </motion.div>
         ))}
       </motion.div>
