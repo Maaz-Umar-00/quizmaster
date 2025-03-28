@@ -1,16 +1,37 @@
 import axios from "axios";
 import { Question } from "@shared/types";
+import * as fs from 'fs';
+import * as path from 'path';
 
-const GROQ_API_KEY = process.env.GROQ_API_KEY || "";
+// Read API key directly from .env file
+let GROQ_API_KEY = "";
+try {
+  const envPath = path.resolve(process.cwd(), '.env');
+  const envContent = fs.readFileSync(envPath, 'utf-8');
+  const match = envContent.match(/GROQ_API_KEY=(.+)/);
+  if (match) {
+    GROQ_API_KEY = match[1].trim();
+  }
+} catch (error) {
+  console.error('Error reading .env file:', error);
+}
+
 const API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 export async function makeGroqApiCall(topic: string, questionCount: number = 5): Promise<Question[]> {
   if (!GROQ_API_KEY) {
+    console.error("GROQ_API_KEY is not set in environment variables");
+    console.log("Current working directory:", process.cwd());
+    console.log("Env file exists:", fs.existsSync(path.resolve(process.cwd(), '.env')));
     throw new Error("GROQ_API_KEY is not set in environment variables");
   }
   
-  console.log("Using GROQ API with key:", GROQ_API_KEY.substring(0, 5) + "..." + (GROQ_API_KEY.length > 10 ? GROQ_API_KEY.substring(GROQ_API_KEY.length - 5) : ""));
-  console.log("Making API call to:", API_URL);
+  console.log("Starting Groq API call...");
+  console.log("Topic:", topic);
+  console.log("Question count:", questionCount);
+  console.log("API URL:", API_URL);
+  console.log("API Key present:", !!GROQ_API_KEY);
+  console.log("API Key length:", GROQ_API_KEY.length);
 
   const headers = {
     "Authorization": `Bearer ${GROQ_API_KEY}`,
