@@ -30,7 +30,8 @@ export default function QuizQuestions({
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const currentQuestion = questions[currentQuestionIndex];
   const userAnswer = userAnswers[currentQuestionIndex];
-  const isCorrect = userAnswer === currentQuestion.correctAnswer;
+  // Only consider answers that are not -1 (timeout) and match the correct answer
+  const isCorrect = userAnswer !== null && userAnswer !== -1 && userAnswer === currentQuestion.correctAnswer;
   const progressPercentage = ((currentQuestionIndex + 1) / questions.length) * 100;
 
   // Reset timer when question changes
@@ -166,20 +167,18 @@ export default function QuizQuestions({
               let optionClasses = "option-card flex items-start p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:bg-gray-50";
               let radioClasses = "w-6 h-6 rounded-full border-2 border-gray-300 flex-shrink-0 mr-3";
               
-              // Apply styling based on selection state
-              if (userAnswer === index) {
+              // First, handle showing the correct answer for all cases where user has answered
+              if (userAnswer !== null) {
+                // If this is the correct answer, always highlight it as correct
                 if (index === currentQuestion.correctAnswer) {
                   optionClasses += " bg-correct/10 border-correct";
                   radioClasses = "w-6 h-6 rounded-full border-2 border-correct bg-correct flex-shrink-0 mr-3";
-                } else {
+                } 
+                // If user selected this option and it's wrong, highlight as incorrect
+                else if (userAnswer === index) {
                   optionClasses += " bg-incorrect/10 border-incorrect";
                   radioClasses = "w-6 h-6 rounded-full border-2 border-incorrect flex-shrink-0 mr-3";
                 }
-              }
-              
-              // Highlight correct answer if user selected wrong
-              if (userAnswer !== null && index === currentQuestion.correctAnswer && userAnswer !== currentQuestion.correctAnswer) {
-                optionClasses += " bg-correct/10 border-correct";
               }
               
               // Apply shake animation for wrong answers
@@ -211,7 +210,16 @@ export default function QuizQuestions({
             exit={{ opacity: 0, height: 0 }}
             className="bg-gray-50 rounded-lg p-4 mb-6"
           >
-            {isCorrect ? (
+            {userAnswer === -1 ? (
+              <div className="flex items-center text-amber-500">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                </svg>
+                <span className="font-medium">
+                  Time's up! The correct answer is <span className="font-semibold">{currentQuestion.options[currentQuestion.correctAnswer]}</span>.
+                </span>
+              </div>
+            ) : isCorrect ? (
               <div className="flex items-center text-correct">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
