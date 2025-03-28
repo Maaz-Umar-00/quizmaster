@@ -39,42 +39,47 @@ export default function QuizQuestions({
   // Reset timer when question changes
   useEffect(() => {
     setTimeLeft(30);
+    setShowFeedback(false);
     
     // Clear any existing timer
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
     
-    // Only start the timer if the user hasn't answered yet
-    if (userAnswers[currentQuestionIndex] === null) {
-      timerRef.current = setInterval(() => {
-        setTimeLeft(prevTime => {
-          if (prevTime <= 1) {
-            // Time's up - auto-select an answer (will be marked as incorrect)
-            // We use -1 as a special value to indicate a timeout
-            if (userAnswers[currentQuestionIndex] === null) {
-              onAnswerSelect(-1);
-              setShowFeedback(true);
-            }
-            
-            // Move to next question or finish quiz after a delay
-            setTimeout(() => {
-              onNextQuestion();
-            }, 1500);
-            
-            // Clear the interval
-            if (timerRef.current) {
-              clearInterval(timerRef.current);
-            }
-            return 0;
-          }
-          return prevTime - 1;
-        });
-      }, 1000);
-    } else {
-      // If the question is already answered, don't start the timer
+    // Check if the question has already been answered
+    const isAnswered = userAnswers[currentQuestionIndex] !== null;
+    
+    // If already answered, show feedback but don't start timer
+    if (isAnswered) {
       setShowFeedback(true);
+      return;
     }
+    
+    // Start the timer for unanswered questions
+    timerRef.current = setInterval(() => {
+      setTimeLeft(prevTime => {
+        if (prevTime <= 1) {
+          // Time's up - auto-select an answer (will be marked as incorrect)
+          // We use -1 as a special value to indicate a timeout
+          if (userAnswers[currentQuestionIndex] === null) {
+            onAnswerSelect(-1);
+            setShowFeedback(true);
+          }
+          
+          // Move to next question or finish quiz after a delay
+          setTimeout(() => {
+            onNextQuestion();
+          }, 1500);
+          
+          // Clear the interval
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+          }
+          return 0;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
     
     // Clean up the timer on unmount or when the question changes
     return () => {

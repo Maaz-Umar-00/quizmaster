@@ -184,6 +184,9 @@ export default function QuizApp() {
         variants={backgroundVariants}
       />
       
+      {/* Fire/Lava glow effect */}
+      <div className="fire-glow"></div>
+      
       <motion.div 
         className="quiz-container mx-auto rounded-xl shadow-md overflow-hidden max-w-3xl hover:shadow-glow relative z-10"
         initial={{ y: 20, opacity: 0 }}
