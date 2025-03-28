@@ -17,9 +17,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Route to fetch quiz questions for a specific topic
   apiRouter.post("/quiz/questions", async (req, res) => {
     try {
+      console.log("Received quiz questions request:", req.body);
+      
       // Validate request body
       const validationResult = validateQuizRequestSchema.safeParse(req.body);
       if (!validationResult.success) {
+        console.error("Validation error:", validationResult.error.errors);
         return res.status(400).json({ 
           message: "Invalid request",
           errors: validationResult.error.errors 
@@ -27,18 +30,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { topic, count } = validationResult.data;
+      console.log(`Fetching ${count} questions for topic: ${topic}`);
       
       // Make API call to Groq (LLaMA 3)
       const questions = await makeGroqApiCall(topic, count);
+      console.log(`Successfully fetched ${questions.length} questions`);
       
       return res.json({
         topic,
         questions,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching quiz questions:", error);
+      // Return more detailed error message
       return res.status(500).json({ 
-        message: "Failed to fetch quiz questions" 
+        message: "Failed to fetch quiz questions",
+        error: error.message || "Unknown error"
       });
     }
   });
