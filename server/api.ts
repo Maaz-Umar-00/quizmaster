@@ -8,6 +8,9 @@ export async function makeGroqApiCall(topic: string, questionCount: number = 5):
   if (!GROQ_API_KEY) {
     throw new Error("GROQ_API_KEY is not set in environment variables");
   }
+  
+  console.log("Using GROQ API with key:", GROQ_API_KEY.substring(0, 5) + "..." + (GROQ_API_KEY.length > 10 ? GROQ_API_KEY.substring(GROQ_API_KEY.length - 5) : ""));
+  console.log("Making API call to:", API_URL);
 
   const headers = {
     "Authorization": `Bearer ${GROQ_API_KEY}`,
@@ -46,7 +49,10 @@ export async function makeGroqApiCall(topic: string, questionCount: number = 5):
   };
 
   try {
+    console.log("Sending request to GROQ API with data:", JSON.stringify(data, null, 2));
     const response = await axios.post(API_URL, data, { headers });
+    
+    console.log("Received response from GROQ API with status:", response.status);
     
     if (response.status !== 200) {
       console.error("Error from Groq API:", response.data);
@@ -100,8 +106,25 @@ export async function makeGroqApiCall(topic: string, questionCount: number = 5):
       console.error("Raw response:", content);
       throw new Error("Failed to parse API response");
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error calling Groq API:", error);
-    throw error;
+    
+    // Enhanced error details
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.error("Error Response Data:", error.response.data);
+      console.error("Error Response Status:", error.response.status);
+      console.error("Error Response Headers:", error.response.headers);
+      throw new Error(`GROQ API Error (${error.response.status}): ${JSON.stringify(error.response.data)}`);
+    } else if (error.request) {
+      // The request was made but no response was received
+      console.error("No response received from GROQ API. Check network connectivity.");
+      throw new Error("No response received from GROQ API. Check network connectivity.");
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.error("Error setting up request:", error.message);
+      throw new Error(`Error setting up GROQ API request: ${error.message}`);
+    }
   }
 }
