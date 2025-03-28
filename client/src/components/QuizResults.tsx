@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
+import InteractiveButton from './InteractiveButton';
+import { playSound, clickSound, transitionSound } from '@/lib/sounds';
 
 interface QuizResultsProps {
   score: number;
@@ -20,6 +22,9 @@ export default function QuizResults({
   
   // Animate the percentage score from 0 to the actual value
   useEffect(() => {
+    // Play transition sound when component mounts
+    playSound(transitionSound, 0.2);
+
     const intervalId = setInterval(() => {
       setAnimatedPercentage(prev => {
         const nextValue = Math.min(prev + 1, percentage);
@@ -58,16 +63,18 @@ export default function QuizResults({
       <div className="relative inline-flex mb-8">
         <div className="w-40 h-40 rounded-full bg-gray-200">
           <div 
-            className="absolute inset-0 flex items-center justify-center"
+            className="absolute inset-0 flex items-center justify-center shadow-glow"
             style={{
               background: `conic-gradient(#4338ca ${animatedPercentage}%, transparent 0)`,
               borderRadius: '50%',
               width: '10rem',
-              height: '10rem'
+              height: '10rem',
+              boxShadow: animatedPercentage > 70 ? '0 0 15px rgba(67, 56, 202, 0.7)' : 'none',
+              transition: 'box-shadow 0.5s ease'
             }}
           >
             <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center">
-              <span className="text-5xl font-bold">{animatedPercentage}%</span>
+              <span className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">{animatedPercentage}%</span>
             </div>
           </div>
         </div>
@@ -109,20 +116,29 @@ export default function QuizResults({
       </div>
       
       <div className="space-x-4">
-        <Button 
-          onClick={onStartNewQuiz}
+        <InteractiveButton 
+          onClick={() => {
+            playSound(clickSound);
+            playSound(transitionSound, 0.3);
+            onStartNewQuiz();
+          }}
           className="px-5 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+          rippleColor="rgba(255, 255, 255, 0.5)"
         >
           Try Another Topic
-        </Button>
+        </InteractiveButton>
         
-        <Button 
+        <InteractiveButton 
           variant="outline"
-          onClick={onRetryQuiz}
+          onClick={() => {
+            playSound(clickSound);
+            onRetryQuiz();
+          }}
           className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100 transition-colors"
+          rippleColor="rgba(100, 100, 100, 0.3)"
         >
           Retry This Quiz
-        </Button>
+        </InteractiveButton>
       </div>
     </motion.div>
   );

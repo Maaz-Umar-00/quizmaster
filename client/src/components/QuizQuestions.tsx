@@ -3,6 +3,8 @@ import { Question, Topic } from '@shared/types';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState, useRef } from 'react';
 import Confetti from 'react-confetti';
+import InteractiveButton from './InteractiveButton';
+import { playSound, correctSound, wrongSound, hoverSound, clickSound } from '@/lib/sounds';
 
 interface QuizQuestionsProps {
   questions: Question[];
@@ -91,19 +93,24 @@ export default function QuizQuestions({
     // Reset feedback when question changes
     setShowFeedback(userAnswers[currentQuestionIndex] !== null);
     
-    // Show confetti if the answer is correct
+    // Show confetti and play correct sound if the answer is correct
     if (userAnswer === currentQuestion.correctAnswer) {
       setShowConfetti(true);
+      playSound(correctSound, 0.3);
       setTimeout(() => setShowConfetti(false), 2000);
     } else if (userAnswer !== null && userAnswer !== -1) {
-      // Show shake effect for wrong answers, but not for timeouts
+      // Show shake effect and play wrong sound for wrong answers, but not for timeouts
       setShakeOption(userAnswer);
+      playSound(wrongSound, 0.2);
       setTimeout(() => setShakeOption(null), 500);
     }
   }, [currentQuestionIndex, userAnswers, userAnswer, currentQuestion.correctAnswer]);
 
   const handleAnswerSelect = (optionIndex: number) => {
     if (userAnswers[currentQuestionIndex] !== null) return; // Prevent changing answer
+    
+    // Play click sound
+    playSound(clickSound, 0.2);
     
     // Stop the timer
     if (timerRef.current) {
@@ -191,6 +198,7 @@ export default function QuizQuestions({
                   key={index}
                   className={optionClasses}
                   onClick={() => handleAnswerSelect(index)}
+                  onMouseEnter={() => userAnswer === null && playSound(hoverSound, 0.1)}
                 >
                   <div className={radioClasses}></div>
                   <div>{option}</div>
@@ -242,22 +250,24 @@ export default function QuizQuestions({
 
       {/* Navigation Buttons */}
       <div className="flex justify-between mt-8">
-        <Button 
+        <InteractiveButton 
           variant="outline"
           onClick={onPrevQuestion} 
           disabled={currentQuestionIndex === 0}
           className="px-5 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 transition-colors"
+          rippleColor="rgba(100, 100, 100, 0.3)"
         >
           Previous
-        </Button>
+        </InteractiveButton>
         
-        <Button 
+        <InteractiveButton 
           onClick={onNextQuestion}
           disabled={userAnswer === null}
           className="px-5 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+          rippleColor="rgba(255, 255, 255, 0.5)"
         >
           {currentQuestionIndex === questions.length - 1 ? 'Finish Quiz' : 'Next'}
-        </Button>
+        </InteractiveButton>
       </div>
     </motion.div>
   );

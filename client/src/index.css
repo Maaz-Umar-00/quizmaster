@@ -14,6 +14,40 @@
   :root {
     --color-correct: #22c55e;
     --color-incorrect: #ef4444;
+    --color-primary-glow: rgba(var(--primary-rgb), 0.35);
+  }
+}
+
+@layer components {
+  .neon-text {
+    text-shadow: 
+      0 0 5px rgba(255, 255, 255, 0.5),
+      0 0 10px currentColor,
+      0 0 15px currentColor,
+      0 0 20px currentColor;
+  }
+  
+  .topic-card {
+    @apply bg-white border border-gray-200 rounded-lg p-5 text-center cursor-pointer transition-all duration-300;
+  }
+  
+  .topic-card:hover {
+    @apply border-primary translate-y-[-5px] shadow-lg;
+    transform: scale(1.03);
+    box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.25);
+  }
+  
+  .topic-card:active {
+    transform: scale(0.98);
+  }
+  
+  .option-card {
+    @apply flex items-start p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:bg-gray-50;
+  }
+  
+  .option-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.15);
   }
 }
 
@@ -42,6 +76,7 @@
     color: var(--color-incorrect);
   }
   
+  /* Shake animation for wrong answers */
   @keyframes shake {
     0%, 100% { transform: translateX(0); }
     10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
@@ -50,5 +85,79 @@
   
   .animate-shake {
     animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+  
+  /* Ripple animation for buttons */
+  @keyframes ripple {
+    0% {
+      transform: scale(0);
+      opacity: 0.5;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 0;
+    }
+  }
+  
+  .animate-ripple {
+    animation: ripple 0.6s linear forwards;
+  }
+  
+  /* Glow animation */
+  @keyframes glow {
+    0%, 100% { 
+      filter: drop-shadow(0 0 3px currentColor);
+    }
+    50% { 
+      filter: drop-shadow(0 0 8px currentColor);
+    }
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite;
+  }
+  
+  /* Neon flicker */
+  @keyframes flicker {
+    0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+      opacity: 0.99;
+      filter: drop-shadow(0 0 5px currentColor) drop-shadow(0 0 10px currentColor);
+    }
+    20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+      opacity: 0.7;
+      filter: none;
+    }
+  }
+  
+  .animate-flicker {
+    animation: flicker 4s linear infinite;
+  }
+  
+  .shadow-glow {
+    box-shadow: 0 0 15px var(--color-primary-glow);
+    transition: box-shadow 0.3s ease;
+  }
+  
+  /* Page transitions */
+  .page-enter {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  
+  .page-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 300ms, transform 300ms;
+  }
+  
+  .page-exit {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .page-exit-active {
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 300ms, transform 300ms;
   }
 }
