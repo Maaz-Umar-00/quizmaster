@@ -150,8 +150,11 @@ export default function QuizQuestions({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="animate-in slide-in-from-bottom"
+      className="animate-in slide-in-from-bottom relative"
     >
+      {/* Right side fire glow effect */}
+      <div className="side-fire-glow" />
+      
       {/* Show confetti when answer is correct */}
       {showConfetti && <Confetti recycle={false} numberOfPieces={200} />}
       

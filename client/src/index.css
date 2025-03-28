@@ -155,6 +155,97 @@
     animation-delay: 1s;
   }
   
+  /* Right side fire glow effect */
+  .side-fire-glow {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80px;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  
+  .side-fire-glow::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -40px;
+    width: 80px;
+    height: 100%;
+    background: 
+      radial-gradient(
+        ellipse at right, 
+        rgba(255, 85, 0, 0.4) 0%, 
+        rgba(255, 30, 0, 0.2) 40%, 
+        transparent 70%
+      );
+    filter: blur(15px);
+    opacity: 0.7;
+    animation: fire-flicker 4s ease-in-out infinite alternate;
+  }
+  
+  .side-fire-glow::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -40px;
+    width: 60px;
+    height: 100%;
+    background: 
+      radial-gradient(
+        ellipse at right, 
+        rgba(255, 165, 0, 0.4) 0%, 
+        rgba(255, 100, 0, 0.2) 30%, 
+        transparent 60%
+      );
+    filter: blur(8px);
+    animation: fire-dance 5s ease infinite alternate-reverse;
+  }
+  
+  @keyframes fire-flicker {
+    0%, 100% {
+      opacity: 0.4;
+      height: 100%;
+      top: 0;
+    }
+    25% {
+      opacity: 0.5;
+      height: 95%;
+      top: 5%;
+    }
+    50% {
+      opacity: 0.7;
+      height: 100%;
+      top: 0;
+    }
+    75% {
+      opacity: 0.3;
+      height: 105%;
+      top: -5%;
+    }
+  }
+  
+  @keyframes fire-dance {
+    0% {
+      transform: scaleY(1) translateY(0);
+      opacity: 0.3;
+    }
+    33% {
+      transform: scaleY(1.1) translateY(-10px);
+      opacity: 0.5;
+    }
+    66% {
+      transform: scaleY(0.9) translateY(5px);
+      opacity: 0.4;
+    }
+    100% {
+      transform: scaleY(1.05) translateY(-5px);
+      opacity: 0.6;
+    }
+  }
+  
   @keyframes fire-pulse {
     0% {
       opacity: 0.3;

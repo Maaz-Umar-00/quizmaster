@@ -144,8 +144,11 @@ export default function TopicSelection({ onTopicSelect }: TopicSelectionProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="animate-in slide-in-from-bottom"
+      className="animate-in slide-in-from-bottom relative"
     >
+      {/* Right side fire glow effect */}
+      <div className="side-fire-glow" />
+      
       <motion.div
         className="animated-bg absolute top-0 left-0 right-0 bottom-0 -z-10 opacity-25"
         initial="hidden"
