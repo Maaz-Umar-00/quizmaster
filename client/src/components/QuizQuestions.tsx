@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Question, Topic } from '@shared/types';
 import { Button } from '@/components/ui/button';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import Confetti from 'react-confetti';
 
 interface QuizQuestionsProps {
   questions: Question[];
@@ -23,18 +24,91 @@ export default function QuizQuestions({
   onPrevQuestion
 }: QuizQuestionsProps) {
   const [showFeedback, setShowFeedback] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(30);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [shakeOption, setShakeOption] = useState<number | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const currentQuestion = questions[currentQuestionIndex];
   const userAnswer = userAnswers[currentQuestionIndex];
   const isCorrect = userAnswer === currentQuestion.correctAnswer;
   const progressPercentage = ((currentQuestionIndex + 1) / questions.length) * 100;
 
-  // Reset feedback when question changes
+  // Reset timer when question changes
   useEffect(() => {
+    setTimeLeft(30);
+    
+    // Clear any existing timer
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    
+    // Only start the timer if the user hasn't answered yet
+    if (userAnswers[currentQuestionIndex] === null) {
+      timerRef.current = setInterval(() => {
+        setTimeLeft(prevTime => {
+          if (prevTime <= 1) {
+            // Time's up - auto-select an answer (will be marked as incorrect)
+            // We use -1 as a special value to indicate a timeout
+            if (userAnswers[currentQuestionIndex] === null) {
+              onAnswerSelect(-1);
+              setShowFeedback(true);
+            }
+            
+            // Move to next question or finish quiz after a delay
+            setTimeout(() => {
+              onNextQuestion();
+            }, 1500);
+            
+            // Clear the interval
+            if (timerRef.current) {
+              clearInterval(timerRef.current);
+            }
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      }, 1000);
+    } else {
+      // If the question is already answered, don't start the timer
+      setShowFeedback(true);
+    }
+    
+    // Clean up the timer on unmount or when the question changes
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [currentQuestionIndex, userAnswers, onAnswerSelect, onNextQuestion]);
+
+  // Stop timer when answer is selected
+  useEffect(() => {
+    if (userAnswer !== null && timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    
+    // Reset feedback when question changes
     setShowFeedback(userAnswers[currentQuestionIndex] !== null);
-  }, [currentQuestionIndex, userAnswers]);
+    
+    // Show confetti if the answer is correct
+    if (userAnswer === currentQuestion.correctAnswer) {
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 2000);
+    } else if (userAnswer !== null && userAnswer !== -1) {
+      // Show shake effect for wrong answers, but not for timeouts
+      setShakeOption(userAnswer);
+      setTimeout(() => setShakeOption(null), 500);
+    }
+  }, [currentQuestionIndex, userAnswers, userAnswer, currentQuestion.correctAnswer]);
 
   const handleAnswerSelect = (optionIndex: number) => {
     if (userAnswers[currentQuestionIndex] !== null) return; // Prevent changing answer
+    
+    // Stop the timer
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    
     onAnswerSelect(optionIndex);
     setShowFeedback(true);
   };
@@ -46,13 +120,25 @@ export default function QuizQuestions({
       transition={{ duration: 0.4 }}
       className="animate-in slide-in-from-bottom"
     >
-      {/* Quiz Progress */}
+      {/* Show confetti when answer is correct */}
+      {showConfetti && <Confetti recycle={false} numberOfPieces={200} />}
+      
+      {/* Quiz Progress and Timer */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold">
           <span className="capitalize">{selectedTopic?.name}</span> Quiz
         </h2>
-        <div className="text-sm font-medium text-gray-500">
-          Question {currentQuestionIndex + 1} of {questions.length}
+        <div className="flex items-center gap-4">
+          {/* Timer */}
+          <div className={`flex items-center ${timeLeft <= 5 ? 'text-red-500 animate-pulse' : 'text-gray-700'}`}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="font-mono font-medium">{timeLeft}s</span>
+          </div>
+          <div className="text-sm font-medium text-gray-500">
+            Question {currentQuestionIndex + 1} of {questions.length}
+          </div>
         </div>
       </div>
 
@@ -94,6 +180,11 @@ export default function QuizQuestions({
               // Highlight correct answer if user selected wrong
               if (userAnswer !== null && index === currentQuestion.correctAnswer && userAnswer !== currentQuestion.correctAnswer) {
                 optionClasses += " bg-correct/10 border-correct";
+              }
+              
+              // Apply shake animation for wrong answers
+              if (shakeOption === index) {
+                optionClasses += " animate-shake";
               }
               
               return (

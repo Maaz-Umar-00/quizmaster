@@ -52,16 +52,39 @@ export default function QuizApp() {
   const handleAnswerSelect = (optionIndex: number) => {
     // Create a copy of userAnswers and update the current answer
     const newUserAnswers = [...userAnswers];
-    newUserAnswers[currentQuestionIndex] = optionIndex;
+    
+    // If optionIndex is -1, it means the timer expired
+    if (optionIndex === -1) {
+      // Mark as incorrect with a special value -1 (timeout)
+      newUserAnswers[currentQuestionIndex] = -1;
+      toast({
+        title: "Time's up!",
+        description: "You ran out of time for this question.",
+        variant: "destructive",
+      });
+    } else {
+      // Normal user selection
+      newUserAnswers[currentQuestionIndex] = optionIndex;
+    }
+    
     setUserAnswers(newUserAnswers);
   };
 
   const handleNextQuestion = () => {
     if (currentQuestionIndex === questions.length - 1) {
       // Calculate final score
-      const finalScore = userAnswers.reduce((total, answer, index) => {
-        return total + (answer === questions[index].correctAnswer ? 1 : 0);
-      }, 0);
+      let finalScore = 0;
+      
+      for (let i = 0; i < questions.length; i++) {
+        const answer = userAnswers[i];
+        const correctAnswer = questions[i].correctAnswer;
+        
+        // Only count as correct if answer matches correctAnswer and is not null or -1 (timeout)
+        if (answer !== null && answer !== -1 && answer === correctAnswer) {
+          finalScore += 1;
+        }
+      }
+      
       setScore(finalScore);
       setActivePage('quiz-results');
     } else {

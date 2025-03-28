@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
 
 interface QuizResultsProps {
   score: number;
@@ -15,6 +16,22 @@ export default function QuizResults({
   onRetryQuiz 
 }: QuizResultsProps) {
   const percentage = Math.round((score / totalQuestions) * 100);
+  const [animatedPercentage, setAnimatedPercentage] = useState(0);
+  
+  // Animate the percentage score from 0 to the actual value
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setAnimatedPercentage(prev => {
+        const nextValue = Math.min(prev + 1, percentage);
+        if (nextValue === percentage) {
+          clearInterval(intervalId);
+        }
+        return nextValue;
+      });
+    }, 20);
+    
+    return () => clearInterval(intervalId);
+  }, [percentage]);
   
   let scoreMessage = "";
   if (percentage >= 90) {
@@ -24,7 +41,7 @@ export default function QuizResults({
   } else if (percentage >= 50) {
     scoreMessage = "Good effort! You're on the right track.";
   } else {
-    scoreMessage = "Keep learning! This topic might need more study.";
+    scoreMessage = "Keep practicing! You'll get better!";
   }
 
   return (
@@ -32,27 +49,63 @@ export default function QuizResults({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="text-center py-10"
+      className="text-center py-6"
     >
-      <div className="mb-8">
-        <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-primary/10 text-primary mb-6">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+      <h2 className="text-2xl font-bold mb-2">Quiz Completed!</h2>
+      <p className="text-gray-600 mb-8">{scoreMessage}</p>
+      
+      {/* Circular progress indicator */}
+      <div className="relative inline-flex mb-8">
+        <div className="w-40 h-40 rounded-full bg-gray-200">
+          <div 
+            className="absolute inset-0 flex items-center justify-center"
+            style={{
+              background: `conic-gradient(#4338ca ${animatedPercentage}%, transparent 0)`,
+              borderRadius: '50%',
+              width: '10rem',
+              height: '10rem'
+            }}
+          >
+            <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center">
+              <span className="text-5xl font-bold">{animatedPercentage}%</span>
+            </div>
+          </div>
         </div>
-        
-        <h2 className="text-2xl font-bold mb-2">Quiz Completed!</h2>
-        <p className="text-gray-600 mb-4">Here's how you did:</p>
-        
-        <div className="text-3xl font-bold text-primary mb-1">
-          {score} / {totalQuestions}
-        </div>
-        <div className="text-lg text-gray-600">{percentage}% Correct</div>
+      </div>
+
+      {/* Score details */}
+      <div className="text-center text-primary text-lg font-medium mb-8">
+        {score} / {totalQuestions} correct
       </div>
       
-      {/* Feedback based on score */}
-      <div className="mb-8 px-6">
-        <div className="text-gray-700">{scoreMessage}</div>
+      {/* Score breakdown */}
+      <div className="bg-gray-50 rounded-lg p-4 mb-8 max-w-sm mx-auto">
+        <h3 className="font-semibold mb-3 text-gray-700">Score Breakdown</h3>
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+              <span>Correct Answers:</span>
+            </div>
+            <span className="font-semibold">{score}</span>
+          </div>
+          
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+              <span>Wrong Answers:</span>
+            </div>
+            <span className="font-semibold">{totalQuestions - score}</span>
+          </div>
+          
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <div className="w-3 h-3 rounded-full bg-primary mr-2"></div>
+              <span>Total Score:</span>
+            </div>
+            <span className="font-semibold">{percentage}%</span>
+          </div>
+        </div>
       </div>
       
       <div className="space-x-4">
