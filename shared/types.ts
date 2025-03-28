@@ -35,3 +35,32 @@ export const TOPICS: Topic[] = [
   { id: 'movies', name: 'Movies', emoji: '🎬' },
   { id: 'geography', name: 'Geography', emoji: '🌍' }
 ];
+
+// User statistics types
+export interface QuizAttempt {
+  id: string;
+  topicId: string;
+  topicName: string;
+  date: string; // ISO string format
+  score: number;
+  totalQuestions: number;
+  timeSpent: number; // in seconds
+}
+
+export interface TopicStats {
+  topicId: string;
+  totalAttempts: number;
+  bestScore: number;
+  averageScore: number;
+  totalQuestionsAnswered: number;
+  correctAnswers: number;
+  averageTimePerQuestion: number; // in seconds
+}
+
+export interface UserStats {
+  quizAttempts: QuizAttempt[];
+  topicStats: Record<string, TopicStats>;
+  totalQuizzesTaken: number;
+  totalQuestionsAnswered: number;
+  overallAccuracy: number; // percentage
+}

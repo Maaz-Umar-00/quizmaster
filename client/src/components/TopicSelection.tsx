@@ -2,9 +2,11 @@ import { TOPICS, Topic } from '@shared/types';
 import { motion } from 'framer-motion';
 import { playSound, hoverSound, clickSound } from '@/lib/sounds';
 import { useState, useEffect } from 'react';
+import { BarChart } from 'lucide-react';
 
 interface TopicSelectionProps {
   onTopicSelect: (topic: Topic) => void;
+  onViewStats?: () => void;
 }
 
 // Letter animation for topic names similar to Quiz Master
@@ -80,7 +82,7 @@ const LetterAnimation = ({ text, index: wordIndex }: { text: string, index: numb
   );
 };
 
-export default function TopicSelection({ onTopicSelect }: TopicSelectionProps) {
+export default function TopicSelection({ onTopicSelect, onViewStats }: TopicSelectionProps) {
   const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
@@ -156,14 +158,35 @@ export default function TopicSelection({ onTopicSelect }: TopicSelectionProps) {
         variants={backgroundVariants}
       />
       
-      <motion.h2 
-        className="text-xl font-semibold mb-6 text-center md:text-left neon-text"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-      >
-        Choose a topic to start your quiz
-      </motion.h2>
+      <div className="flex justify-between items-center mb-6">
+        <motion.h2 
+          className="text-xl font-semibold text-center md:text-left neon-text"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
+          Choose a topic to start your quiz
+        </motion.h2>
+        
+        {onViewStats && (
+          <motion.button
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 hover:bg-primary/40 text-primary shadow-glow transition-all"
+            onClick={() => {
+              playSound(clickSound);
+              onViewStats();
+            }}
+            onMouseEnter={() => playSound(hoverSound, 0.1)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+          >
+            <BarChart className="w-4 h-4" />
+            <span>Stats</span>
+          </motion.button>
+        )}
+      </div>
       
       <motion.div 
         className="grid grid-cols-2 md:grid-cols-3 gap-4"

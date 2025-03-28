@@ -505,4 +505,29 @@
     transform: translateY(-20px);
     transition: opacity 300ms, transform 300ms;
   }
+  
+  /* Stats display styles */
+  .stat-card {
+    @apply bg-card border border-border/50 rounded-lg p-4 shadow-sm transition-all hover:shadow-glow-sm;
+  }
+
+  .performance-card {
+    @apply bg-card border border-border/40 rounded-lg p-3 shadow-sm transition-all hover:shadow-glow-sm hover:border-primary/30;
+  }
+
+  .activity-card {
+    @apply bg-card/50 rounded-lg transition-all hover:bg-card hover:shadow-sm;
+  }
+
+  .history-card {
+    @apply bg-card/80 border border-border/40 rounded-lg mb-3 transition-all hover:shadow-glow-sm;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-indigo-400 to-primary;
+  }
+
+  .shadow-glow-sm {
+    box-shadow: 0 0 5px 0 rgba(var(--primary-rgb), 0.2), 0 0 10px 0 rgba(var(--primary-rgb), 0.1);
+  }
 }

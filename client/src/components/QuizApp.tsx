@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import TopicSelection from './TopicSelection';
 import LoadingState from './LoadingState';
@@ -6,12 +6,14 @@ import ErrorState from './ErrorState';
 import QuizQuestions from './QuizQuestions';
 import QuizResults from './QuizResults';
 import AnimatedTitle from './AnimatedTitle';
+import StatsDisplay from './StatsDisplay';
 import { Question, Topic } from '@shared/types';
 import { useToast } from '@/hooks/use-toast';
 import { fetchQuizQuestions } from '@/lib/api';
 import { playSound, transitionSound } from '@/lib/sounds';
+import { recordQuizAttempt } from '@/lib/userStatsService';
 
-type ActivePage = 'topic-selection' | 'loading' | 'error' | 'quiz-questions' | 'quiz-results';
+type ActivePage = 'topic-selection' | 'loading' | 'error' | 'quiz-questions' | 'quiz-results' | 'stats';
 
 // Page transition variants
 const pageVariants = {
@@ -28,6 +30,9 @@ export default function QuizApp() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [pageLoaded, setPageLoaded] = useState(false);
+  const [quizStartTime, setQuizStartTime] = useState<number | null>(null);
+  const [totalQuizTime, setTotalQuizTime] = useState<number>(0);
+  const [showStats, setShowStats] = useState<boolean>(false);
   const { toast } = useToast();
   
   // Initialize page load animation
@@ -37,9 +42,19 @@ export default function QuizApp() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Start tracking quiz time when questions are loaded
+  useEffect(() => {
+    if (activePage === 'quiz-questions' && !quizStartTime) {
+      setQuizStartTime(Date.now());
+    }
+  }, [activePage, quizStartTime]);
+
   const handleTopicSelect = async (topic: Topic) => {
     setSelectedTopic(topic);
     setActivePage('loading');
+    // Reset timer state
+    setQuizStartTime(null);
+    setTotalQuizTime(0);
 
     try {
       const data = await fetchQuizQuestions(topic.id);
@@ -103,6 +118,24 @@ export default function QuizApp() {
         }
       }
       
+      // Calculate total quiz time
+      if (quizStartTime) {
+        const endTime = Date.now();
+        const timeSpentInSeconds = Math.round((endTime - quizStartTime) / 1000);
+        setTotalQuizTime(timeSpentInSeconds);
+        
+        // Record quiz attempt if we have a selected topic
+        if (selectedTopic) {
+          recordQuizAttempt(
+            selectedTopic.id,
+            selectedTopic.name,
+            finalScore,
+            questions.length,
+            timeSpentInSeconds
+          );
+        }
+      }
+      
       setScore(finalScore);
       setActivePage('quiz-results');
     } else {
@@ -138,6 +171,17 @@ export default function QuizApp() {
     setActivePage(newPage);
   };
 
+  // Stats related handlers
+  const handleToggleStats = () => {
+    playSound(transitionSound, 0.15);
+    setShowStats(!showStats);
+  };
+  
+  const handleCloseStats = () => {
+    playSound(transitionSound, 0.15);
+    setShowStats(false);
+  };
+
   // Override handlers to include transition sounds
   const handlePageTransition = {
     topicSelect: (topic: Topic) => {
@@ -151,6 +195,10 @@ export default function QuizApp() {
     retryQuiz: () => {
       playSound(transitionSound, 0.15);
       handleRetryQuiz();
+    },
+    viewStats: () => {
+      playSound(transitionSound, 0.15);
+      handleToggleStats();
     }
   };
 
@@ -238,7 +286,10 @@ export default function QuizApp() {
                 animate="animate"
                 exit="exit"
               >
-                <TopicSelection onTopicSelect={handlePageTransition.topicSelect} />
+                <TopicSelection 
+                  onTopicSelect={handlePageTransition.topicSelect} 
+                  onViewStats={handlePageTransition.viewStats}
+                />
               </motion.div>
             )}
 
@@ -305,6 +356,30 @@ export default function QuizApp() {
           </AnimatePresence>
         </div>
       </motion.div>
+      
+      {/* Stats Modal */}
+      <AnimatePresence>
+        {showStats && (
+          <motion.div 
+            className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleCloseStats}
+          >
+            <motion.div 
+              className="bg-card rounded-xl shadow-lg w-full max-w-4xl overflow-hidden"
+              initial={{ scale: 0.9, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.9, y: 20, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+            >
+              <StatsDisplay onClose={handleCloseStats} />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
