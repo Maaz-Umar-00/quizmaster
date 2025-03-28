@@ -214,7 +214,7 @@ export default function QuizApp() {
           />
           
           <AnimatedTitle 
-            text="QUIZ MASTER" 
+            text="WELCOME TO QUIZ MASTER" 
             className="text-2xl md:text-3xl font-bold text-white tracking-wide mb-2 relative z-10" 
           />
           <motion.p 
